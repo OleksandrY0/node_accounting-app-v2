@@ -24,7 +24,7 @@ function createServer() {
     const user = users.find((u) => u.id === id);
 
     if (!user) {
-      return res.sendStatus(404);
+      return res.status(404).send('User not found');
     }
 
     return res.status(200).json(user);
@@ -34,7 +34,7 @@ function createServer() {
     const { name } = req.body;
 
     if (!name) {
-      return res.sendStatus(400);
+      return res.status(400).send('Name is required');
     }
 
     const user = {
@@ -57,27 +57,31 @@ function createServer() {
     const user = users.find((u) => u.id === id);
 
     if (!user) {
-      return res.sendStatus(404);
+      return res.status(404).send('User not found');
     }
 
     users = users.filter((u) => u.id !== id);
 
-    return res.sendStatus(204);
+    return res.status(204).send();
   });
 
   app.patch('/users/:id', express.json(), (req, res) => {
     const id = Number(req.params.id);
 
+    if (isNaN(id)) {
+      return res.status(400).send('Invalid id');
+    }
+
     const user = users.find((u) => u.id === id);
 
     if (!user) {
-      return res.sendStatus(404);
+      return res.status(404).send('User not found');
     }
 
     const { name } = req.body;
 
     if (!name) {
-      return res.sendStatus(400);
+      return res.status(400).send('Name is required');
     }
 
     const newUser = {
@@ -103,7 +107,7 @@ function createServer() {
       const userId = Number(req.query.userId);
 
       if (isNaN(userId)) {
-        return res.status(400).send();
+        return res.status(400).send('Invalid userId');
       }
       results = results.filter((e) => e.userId === userId);
     }
@@ -121,7 +125,7 @@ function createServer() {
       const from = new Date(req.query.from);
 
       if (isNaN(from.getTime())) {
-        return res.status(400).send();
+        return res.status(400).send('Invalid from date');
       }
       results = results.filter((e) => new Date(e.spentAt) >= from);
     }
@@ -130,7 +134,7 @@ function createServer() {
       const to = new Date(req.query.to);
 
       if (isNaN(to.getTime())) {
-        return res.status(400).send();
+        return res.status(400).send('Invalid to date');
       }
       results = results.filter((e) => new Date(e.spentAt) <= to);
     }
@@ -147,15 +151,15 @@ function createServer() {
       !title ||
       amount === undefined ||
       !category ||
-      !note
+      note === undefined
     ) {
-      return res.sendStatus(400);
+      return res.status(400).send('Missing required fields');
     }
 
     const user = users.find((u) => u.id === userId);
 
     if (!user) {
-      return res.sendStatus(400);
+      return res.status(400).send('Invalid userId');
     }
 
     const newExpense = {
@@ -177,13 +181,13 @@ function createServer() {
     const id = Number(req.params.id);
 
     if (isNaN(id)) {
-      return res.sendStatus(400);
+      return res.status(400).send('Invalid id');
     }
 
     const expense = expenses.find((e) => e.id === id);
 
     if (!expense) {
-      return res.sendStatus(404);
+      return res.status(404).send('Expense not found');
     }
 
     return res.status(200).json(expense);
@@ -196,24 +200,28 @@ function createServer() {
       return res.status(400).send('Invalid id');
     }
 
-    const expense = expenses.find((u) => u.id === id);
+    const expense = expenses.find((e) => e.id === id);
 
     if (!expense) {
-      return res.sendStatus(404);
+      return res.status(404).send('Expense not found');
     }
 
-    expenses = expenses.filter((u) => u.id !== id);
+    expenses = expenses.filter((e) => e.id !== id);
 
-    return res.sendStatus(204);
+    return res.status(204).send();
   });
 
   app.patch('/expenses/:id', express.json(), (req, res) => {
     const id = Number(req.params.id);
 
-    const expense = expenses.find((u) => u.id === id);
+    if (isNaN(id)) {
+      return res.status(400).send('Invalid id');
+    }
+
+    const expense = expenses.find((e) => e.id === id);
 
     if (!expense) {
-      return res.sendStatus(404);
+      return res.status(404).send('Expense not found');
     }
 
     const { userId, spentAt, title, amount, category, note } = req.body;
@@ -222,7 +230,7 @@ function createServer() {
       const user = users.find((u) => u.id === userId);
 
       if (!user) {
-        return res.sendStatus(400);
+        return res.status(400).send('Invalid userId');
       }
       expense.userId = userId;
     }
